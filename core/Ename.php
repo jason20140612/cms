@@ -30,6 +30,7 @@ ini_set('display_errors','on');
 			
 			fimport('FormCheck','form');
 			fimport('Form','form');
+			$_global['site_url'] = 'http://'.$_SERVER['SERVER_NAME'].'/';
 		}
 		public function getUrl()
 		{

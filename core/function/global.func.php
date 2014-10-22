@@ -136,4 +136,20 @@ function getFClientIp()
 	}
 	return $ip;
 }
+
+function getTplFile($file)
+{
+	global $_global;
+	require_once SITE_ROOT.'/tpl/'.$_global['config']['setting']['siteTmpl'].'/'.$file;
+}
+function getCssFile($file)
+{
+	global $_global;
+	return $_global['site_url'].'tpl/'.$_global['config']['setting']['siteTmpl'].'/css/'.$file;
+}
+function getJsFile($file)
+{
+	global $_global;
+	return $_global['site_url'].'tpl/'.$_global['config']['setting']['siteTmpl'].'/js/'.$file;
+}
 ?>

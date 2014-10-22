@@ -237,4 +237,36 @@ class DbBase
 		}
 		return $array;
 	}
+	/**
+	 * i表示整型,d表示浮点型,b代表二进制,s代表其它的所有
+	 * @param unknown $vals
+	 */
+	public function getValType($vals)
+	{
+		$types = '';
+		foreach($vals as $v)
+		{
+			if(is_array($v) || is_object($v))
+			{
+				throw new Exception('数据格式有错');
+			}
+			if(is_int($v))
+			{
+				$types .= 'i';
+			}
+			elseif(is_float($v))
+			{
+				$types .= 'd';
+			}
+			elseif(is_string($v))
+			{
+				$types .= 's';
+			}
+			else
+			{
+				throw new Exception('类型不支持');
+			}
+		}
+		return $types;
+	}
 }
