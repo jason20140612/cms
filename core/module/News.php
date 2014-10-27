@@ -16,7 +16,6 @@
 				global $_global;
 				NewForm::add();
 				$this->logic->addNewLogic();
-				
 			}
 			catch (Exception $e)
 			{

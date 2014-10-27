@@ -1,41 +1,37 @@
-<?php echo getTplFile('common/header.php');?>
-<table id="newList">
-<th>列表</th>
-<?php foreach($_global['data'] as $k=>$v):?>
+	<?php echo getTplFile('common/header.php');?>
+<div class="container">
+	<?php if(!empty($_global['data']['ote'])):?>
+<table id="newList" class='table table-striped table-bordered'>
 <tr>
-	<td><?php echo $v['Title']?></td>
-	<td><?php echo $v['Content']?></td>
+	<th>名称</th>
+	<th>图片</th>
+	<th>内容</th>
+</tr>
+<?php foreach($_global['data']['ote'] as $k=>$v):?>
+<tr>
+	<td><?php echo $v['name']?></td>
+	<td><?php echo $v['pic']?></td>
+	<td><?php echo $v['content']?></td>
 </tr>
 <?php endforeach;?>
 </table>
-<?php echo getTplFile('common/footer.php')?>
+<?php endif;?>
 
-<form id="addForm" method="post">
-<table>
-<th>添加</th>
+<?php if(!empty($_global['data']['product'])):?>
+<table id="newList" class='table table-striped table-bordered'>
 <tr>
-	<td>
-		标题
-	</td>
-	<td>
-		<input type="text" name="title">
-	</td>
+	<th>名称</th>
+	<th>图片</th>
+	<th>内容</th>
 </tr>
+<?php foreach($_global['data']['product'] as $k=>$v):?>
 <tr>
-	<td>
-		内容
-	</td>
-	<td>
-		<textarea rows="3" cols="20" name="content"></textarea>
-	</td>
+	<td><?php echo $v['name']?></td>
+	<td><?php echo $v['pic']?></td>
+	<td><?php echo $v['content']?></td>
 </tr>
-<tr>
-	<td>
-		<input type="submit" value="提交" id="submit">
-	</td>
-	<td>
-		<input type="reset" value="重置">
-	</td>
-</tr>
+<?php endforeach;?>
 </table>
-</form>
+<?php endif;?>
+</div>
+<?php echo getTplFile('common/footer.php')?>

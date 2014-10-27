@@ -17,7 +17,7 @@
 			if($id)
 			{
 				$result['status'] = 1;
-				$result['new'] = $newMod->getOneNew($id);
+				$result['news'] = $newMod->getOneNew($id);
 			}
 			else
 			{

@@ -18,7 +18,7 @@ $(function(){
 		obj.title = $.trim($("input[name='title']").val());
 		obj.content = $.trim($("textarea[name='content']").val());
 		$.ajax({
-			url:SITE_URL+'new'+'/add',
+			url:SITE_URL+'news'+'/add',
 			type:'POST',
 			data:obj,
 			dataType:'json',
@@ -27,10 +27,11 @@ $(function(){
 				var html='';
 				if(result.status == 1)
 				{
-					html += "<tr><td>"+result.title+"</td>"+result.content+"</tr>";
+					html += "<tr><td>"+result.news.Title+"</td><td>"+result.news.Content+"</td></tr>";
 				}
-				$("#newList").appendTo(html);
+				$("#newList").append(html);
 			}
 		});
+		return false;
 	});
 })

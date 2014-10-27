@@ -10,7 +10,8 @@
 		
 		public function indexLogic()
 		{
-			$data = $this->lib->getDataList();
+			$data['ote'] = $this->lib->getOteDataList();
+			$data['product'] = $this->lib->getProductDataList();
 			return $data;
 		}
 	}

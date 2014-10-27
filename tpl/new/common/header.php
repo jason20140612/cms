@@ -1,7 +1,10 @@
-<html>
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>首页</title>
+	<link rel="stylesheet" type="text/css" href="<?php echo getCssFile('bootstrap.css')?>" />
+	<link rel="stylesheet" type="text/css" href="<?php echo getCssFile('bootstrap-theme.css')?>" />
 	<script type="text/javascript" src="<?php echo getJsFile('jquery.min.js')?>"></script>
 	<script type="text/javascript" src="<?php echo getJsFile('base.js');?>"></script>
 	<script type="text/javascript">

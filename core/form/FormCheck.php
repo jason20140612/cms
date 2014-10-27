@@ -25,8 +25,20 @@
 						}
 						break;
 					case 'POST#':
+						$value = isset($_POST[$val[0]]) ? $_POST[$val[0]] : 0;
+						if(!$value)
+						{
+							continue;
+						}
+						$value = FormCheck::my_strip_tags_lib($value);
+						break;
 						break;
 					case 'POST':
+						$value = isset($_POST[$val[0]]) ? $_POST[$val[0]] : 0;
+						if(!$value)
+						{
+							self::$error[] = $val[0].'不能为空';
+						}
 						break;
 					default:
 						self::$error[] = $val[0].'类型不支持';
@@ -70,6 +82,21 @@
 					}
 					break;
 				case 's':
+					$val = trim($val);
+					if(!(strlen($val)>=$range[0] && strlen($val) <= $range[1]))
+						self::$error[] = $name.'超出了范围';
+					if($callback)
+					{
+						$func = explode('::', $callback[0]);
+						if (! $func[0]::$func[1]($val))
+						{
+							$msg = $callback[1];
+							if(!(true === $msg))
+							{
+								self::$error[] = $msg;
+							}
+						}
+					}
 					break;
 				default:
 					self::$error[] = $name.'数据类型不支持';

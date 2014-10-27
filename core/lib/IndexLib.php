@@ -3,13 +3,20 @@
 	{
 		public function __construct()
 		{
-			fimport('NewMod','models');
+			fimport('oteMod','models');
+			fimport('productMod','models');
 		}
 		
-		public function getDataList()
+		public function getOteDataList()
 		{
-			$newMod = new NewMod();
-			$list = $newMod->getNewList();
+			$oteMod = new OteMod();
+			$list = $oteMod->getOteList();
+			return $list;
+		}
+		public function getProductDataList()
+		{
+			$productMod = new ProductMod();
+			$list = $productMod->getProductList();
 			return $list;
 		}
 	}
