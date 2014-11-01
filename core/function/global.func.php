@@ -96,20 +96,45 @@ function template($file, $tplDir='',$data=array())
  *        	是否显示网站关闭
  * @return void
  */
-function showError($title, $message, $jumpUrl, $wait = 3, $isClose = false)
+function showError($jumpUrl,$title='', $message='',$wait = 3, $isClose = false)
 {
-	global $global;
+	global $_global;
+	$_global['title'] = $title ? $title : '操作失败';
+	$_global['message'] = explode('\n', $message);
+	$_global['jumpUrl'] = $_global['site_url'].$jumpUrl;
 	if($isClose)
 	{
-		include template('page/close');
+		template('common/close');
 	}
 	else
 	{
-		include template('page/error');
+		template('common/error');
 	}
-	display();
 }
-
+/**
+ * 显示错误信息
+ *
+ * @param string $title
+ *        	标题
+ * @param string $message
+ *        	错误信息
+ * @param string $jump_url
+ *        	跳转地址
+ * @param int $wait
+ *        	等待时间
+ * @param bool $is_close
+ *        	是否显示网站关闭
+ * @return void
+ */
+function showSuccess($jumpUrl,$title='',$message='', $wait = 3, $isClose = false)
+{
+	global $_global;
+	$_global['title'] = $title ? $title : '操作成功';
+	$message = $message ? $message : '操作成功';
+	$_global['message'] = explode('\n', $message);
+	$_global['jumpUrl'] = $_global['site_url'].$jumpUrl;
+	template('common/success');
+}
 /**
  * 获取客户端IP
  * 

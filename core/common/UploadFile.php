@@ -374,12 +374,6 @@
 			return array('url'=>$thumburl,'path'=>$thumbname);
          }
          return false;
-			}
-			else
-			{
-				//图像不存在
-				return false;
-			}
 		}
 		
 		public function get_image_info($src){
