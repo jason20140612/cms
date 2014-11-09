@@ -1,0 +1,13 @@
+# Helicon ISAPI_Rewrite configuration file
+# Version 3.1.0.67
+
+<IfModule mod_rewrite.c>
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+
+#RewriteRule ^index$    index\.php\index\/index [QSA,L]
+RewriteRule ^(\w+)/(\w+)$  index\.php\/$1/$2 [QSA,L]
+RewriteRule ^app/index$  index\.php\/app\/index [QSA,L]
+RewriteRule ^recruit/index$  index\.php\/recruit\/index [QSA,L]
+</IfModule>

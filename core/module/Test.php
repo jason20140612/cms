@@ -1,11 +1,15 @@
 <?php
 	class Test
 	{
+		public function __contruct()
+		{
+			fimport('uploadFile','common');
+		}
 		public function domain()
 		{
 			try
 			{
-				echo '555';
+				
 			}
 			catch (Exception $e)
 			{

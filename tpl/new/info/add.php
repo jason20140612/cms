@@ -1,6 +1,6 @@
 <?php echo getTplFile('common/header.php');?>
 <div class="container">
-<form class="form-horizontal" role="form" id="addForm" method="POST" action="<?php echo $_global['site_url'].'info/doadd'?>">
+<form class="form-horizontal" role="form" id="addForm" method="POST" action="<?php echo $_global['site_url'].'info/doadd'?>" enctype="multipart/form-data">
   <div class="form-group">
     <label for=""name"" class="col-sm-2 control-label">名称</label>
     <div class="col-sm-10">

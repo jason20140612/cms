@@ -177,4 +177,82 @@ function getJsFile($file)
 	global $_global;
 	return $_global['site_url'].'tpl/'.$_global['config']['setting']['siteTmpl'].'/js/'.$file;
 }
+/**
+ * 检查目标文件夹是否存在，如果不存在则自动创建该目录
+ *
+ * @access      public
+ * @param       string      folder     目录路径。不能使用相对于网站根目录的URL
+ *
+ * @return      bool
+ */
+function makeDir($folder)
+{
+    $reval = false;
+    if (!file_exists($folder))
+    {
+		$folder = str_replace(SITE_ROOT,'',$folder);
+        /* 如果目录不存在则尝试创建该目录 */
+        @umask(0);
+        /* 将目录路径拆分成数组 */
+        preg_match_all('/([^\/]*)\/?/i', $folder, $atmp);
+        /* 如果第一个字符为/则当作物理路径处理 */
+        $base = SITE_ROOT.(($atmp[0][0] == '/') ? '/' : '');
+
+        /* 遍历包含路径信息的数组 */
+        foreach ($atmp[1] AS $val)
+        {
+            if ('' != $val)
+            {
+                $base .= $val;
+                if ('..' == $val || '.' == $val)
+                {
+                    /* 如果目录为.或者..则直接补/继续下一个循环 */
+                    $base .= '/';
+                    continue;
+                }
+            }
+            else
+            {
+                continue;
+            }
+            $base .= '/';
+
+            if (!file_exists($base))
+            {
+                /* 尝试创建目录，如果创建失败则继续循环 */
+                if (@mkdir(rtrim($base, '/'), 0777))
+                {
+                    @chmod($base, 0777);
+                    $reval = true;
+                }
+            }
+        }
+    }
+    else
+    {
+        /* 路径已经存在。返回该路径是不是一个目录 */
+        $reval = is_dir($folder);
+    }
+	//清除文件状态缓存
+    clearstatcache();
+    return $reval;
+}
+/**
+ * 生成随机数
+ * @param int $length 随机数长度
+ * @param int $numeric 是否只生成数字
+ * @return string
+ */
+function random($length, $numeric = 0)
+{
+	$seed = base_convert(md5(microtime().$_SERVER['DOCUMENT_ROOT']), 16, $numeric ? 10 : 35);
+	$seed = $numeric ? (str_replace('0', '', $seed).'012340567890') : ($seed.'zZ'.strtoupper($seed));
+	$hash = '';
+	$max = strlen($seed) - 1;
+	for($i = 0; $i < $length; $i++)
+	{
+		$hash .= $seed{mt_rand(0, $max)};
+	}
+	return $hash;
+}
 ?>

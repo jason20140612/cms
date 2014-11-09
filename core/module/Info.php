@@ -22,7 +22,7 @@
 			}
 		}
 		
-		public function doAdd()
+		public function doadd()
 		{
 			try
 			{

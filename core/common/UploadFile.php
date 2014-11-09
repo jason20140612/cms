@@ -17,7 +17,7 @@
 		 */
 		public function __construct($file,$dir='temp')
 		{
-			if(!is_array($file) || empty($file) || !$this->isUploadFile($ile['tmp_name']) || trim($file['name']) == '' || $file['size'] == 0)
+			if(!is_array($file) || empty($file) || !$this->isUploadFile($file['tmp_name']) || trim($file['name']) == '' || $file['size'] == 0)
 			{
 				$this->file = array();
 				$this->errorCode = -1;
@@ -55,7 +55,7 @@
 			{
 				$this->errorCode = -102;
 			}
-			elseif($this->saveFile($this->file['tmp_name'],$this->file['local_target']))
+			elseif(!$this->saveFile($this->file['tmp_name'],$this->file['localTarget']))
 			{
 				$this->errorCode = -103;
 			}
@@ -80,7 +80,7 @@
 		 */
 		public function fileExt($fileName)
 		{
-			return addslashes(strtolower(strrchr($fileName,'.'),1,10));
+			return addslashes(strtolower(substr(strrchr($fileName, '.'), 1, 10)));
 		}
 		/**
 		 * 根据扩展名判断文件是否为图像
@@ -106,11 +106,11 @@
 				$ext = self::fileExt($target);
 				$isImage = self::isImageExt($ext);
 				
-				if(!isImage && $ext != 'tmp')
+				if(!$isImage && $ext != 'tmp')
 				{
 					return false;
 				}
-				elseif(!isReadable($target))
+				elseif(!is_readable($target))
 				{
 					return false;
 				}
@@ -155,11 +155,11 @@
 		public function getTargetDir($dir)
 		{
 			if($dir == 'temp')
-			$dir = './public/upload/temp/'.fToDate(NULL,'Y/m/d/H');
+			$dir = './public/upload/temp/'.date("Y/m/d");
 			else
-				$dir = './public/upload/'.$dir.'/'.fToDate(NULL,'Y/m/d');
+				$dir = './public/upload/'.$dir.'/'.date("Y/m/d");
 	
-			makeDir(FANWE_ROOT.$dir);
+			makeDir(SITE_ROOT.$dir);
 			return $dir;
 		}
 		/**
@@ -170,7 +170,7 @@
 	     **/
 		public function saveFile($source,$target,$isConver = false)
 		{
-			if(!self::inUploadFile($source))
+			if(!self::isUploadFile($source))
 			{
 				$success = false;
 			}
@@ -178,7 +178,7 @@
 			{
 				$success = true;
 			}
-			elseif($copy($source,$target))
+			elseif(copy($source,$target))
 			{
 				$success = true;
 			}
@@ -201,7 +201,7 @@
 			{
 				$this->errorCode = 0;
 				@chmod($target,0644);
-				$unlink($source);
+				unlink($source);
 			}
 			else
 			{
@@ -225,31 +225,31 @@
 				$height = $info[1];
 				$type = $info['type'];
 			
-			//载入原图
-			$createFun = 'imagecreatefrom'.($type == 'jpg' ? 'jpeg' : $type);
-			if(!function_exists($createFun))
-			{
-				$createFun = 'imagecreatefromjpeg';
-			}
-			$srcImg = $createFun($source);
-			if('gif' == $type ||　'png' == $type)
-			{
-				//为图像分配颜色
-				imagecolorallocate($srcImg,255,255,255);
-			}
-			//对jpeg图像进行隔行扫描
-			if('jpg' == $type || 'jpeg' == $type)
-			{
-			 	imageinterlace($srcImg,1);
-			}
-			if($source == $target)
-			{
-				@unlink($source);
-			}
-			//生成图片
-			imagefilter($srcImg,IMG_FILTER_CONTRAST,-2); //改变图像的对比度
-			imagejpeg($srcImg,$target,IMAGE_CREATE_QUALITY);// JPEG 格式将图像输出
-			imagedestroy($srcImg);
+				//载入原图
+				$createFun = 'imagecreatefrom'.($type == 'jpg' ? 'jpeg' : $type);
+				if(!function_exists($createFun))
+				{
+					$createFun = 'imagecreatefromjpeg';
+				}
+				$srcImg = $createFun($source);
+				if($type == 'gif' || $type == 'png')
+				{
+					//为图像分配颜色
+					imagecolorallocate($srcImg,255,255,255);
+				}
+				//对jpeg图像进行隔行扫描
+				if('jpg' == $type || 'jpeg' == $type)
+				{
+				 	imageinterlace($srcImg,1);
+				}
+				if($source == $target)
+				{
+					@unlink($source);
+				}
+				//生成图片
+				imagefilter($srcImg,IMG_FILTER_CONTRAST,-2); //改变图像的对比度
+				imagejpeg($srcImg,$target,IMAGE_CREATE_QUALITY);// JPEG 格式将图像输出
+				imagedestroy($srcImg);
 			}
 			return false;
 		}
@@ -267,7 +267,7 @@
 				if($maxWidth > 0 && $maxHeight > 0)
 				{
 					//以宽度缩放
-					$scale = $maxHeight/$scrHeight;
+					$scale = $maxHeight/$srcHeight;
 				}
 				elseif($maxWidth == 0)
 				{
@@ -286,18 +286,18 @@
 				else
 				{
 					//缩略图尺寸
-					$width = int($srcWidth*$scale);
-					$height = int($srcHeight*$scale);
+					$width = intval($srcWidth*$scale);
+					$height = intval($srcHeight*$scale);
 				}
 				
-				return array($width,$height);
+				return array($width,$height,$type);
 		}
 		public function thumb($image,$maxWidth=200,$maxHeight=50,$gen=0,$interlace=true,$filePath = '')
 		{
 			$info = $this->get_image_info($image);
 			if(false !== $info)
 			{
-				list($width,$height) = $this->scale($info,$maxWidth,$maxHeight);
+				list($width,$height,$type) = $this->scale($info,$maxWidth,$maxHeight);
 				$paths = pathinfo($image);
 				$ext = $type;
 				if(empty($filePath))
@@ -346,9 +346,9 @@
 
             // 复制图片
             if(function_exists("imagecopyresampled"))
-                imagecopyresampled($thumbImg, $srcImg, 0, 0, $x, $y, $width, $height, $srcWidth,$srcHeight);
+                imagecopyresampled($thumbImg, $srcImg, 0, 0, $x, $y, $width, $height, $info['width'],$info['height']);
             else
-                imagecopyresized($thumbImg, $srcImg, 0, 0, $x, $y, $width, $height,  $srcWidth,$srcHeight);
+                imagecopyresized($thumbImg, $srcImg, 0, 0, $x, $y, $width, $height,  $info['width'],$info['height']);
             if('gif'==$type || 'png'==$type) {
                 $background_color  =  imagecolorallocate($thumbImg,  0,255,0);  //  指派一个绿色
 				imagecolortransparent($thumbImg,$background_color);  //  设置为透明色，若注释掉该行则输出绿色的图
@@ -412,8 +412,6 @@
         //图片信息
         $sInfo=$this->get_image_info($source);
         $wInfo=$this->get_image_info($water);
-        //$sInfo = Image::getImageInfo($source);
-        //$wInfo = Image::getImageInfo($water);
 
         //如果图片小于水印图片，不生成图片
         if($sInfo["width"] < $wInfo["width"] || $sInfo['height'] < $wInfo['height'])
@@ -444,7 +442,6 @@
         		$posY=0;
 		        $posX=0;
 		        //生成混合图像
-		       // imagecopymerge($sImage, $wImage, $posX, $posY, 0, 0, $wInfo['height'],$wInfo['width'],$alpha);
         		imagecopy($sImage, $wImage, $posX, $posY, 0, 0,$wInfo['width'],$wInfo['height']);
         		break;
         	//右上
@@ -452,7 +449,6 @@
         		$posY=0;
 		        $posX=$sInfo[0]-$wInfo['width'];
 		        //生成混合图像
-		        //imagecopymerge($sImage, $wImage, $posX, $posY, 0, 0, $wInfo['width'],$wInfo['height'],$alpha);
         		imagecopy($sImage, $wImage, $posX, $posY, 0, 0,$wInfo['width'],$wInfo['height']);
         		break;
         	//左下
@@ -460,7 +456,6 @@
         		$posY=$sInfo['height']-$wInfo['height'];
 		        $posX=0;
 		        //生成混合图像
-		        //imagecopymerge($sImage, $wImage, $posX, $posY, 0, 0, $wInfo['width'],$wInfo['height'],$alpha);
         		imagecopy($sImage, $wImage, $posX, $posY, 0, 0,$wInfo['width'],$wInfo['height']);
         		break;
         	//右下
@@ -468,16 +463,13 @@
 		        $posY=$sInfo['height']-$wInfo['height'];
 		        $posX=$sInfo['width']-$wInfo['width'];
 		        //生成混合图像
-		       //imagecopymerge($sImage, $wImage, $posX, $posY, 0, 0,$wInfo['width'],$wInfo['height'],$alpha);
         		 imagecopy($sImage, $wImage, $posX, $posY, 0, 0,$wInfo['width'],$wInfo['height']);
-        		
         		break;
         	//居中
         	case 5:
 		        $posY=$sInfo['height']/2-$wInfo['height']/2;
 		        $posX=$sInfo['width']/2-$wInfo['width']/2;
 		        //生成混合图像
-		       // imagecopymerge($sImage, $wImage, $posX, $posY, 0, 0, $wInfo['width'],$wInfo['height'],$alpha);
         		imagecopy($sImage, $wImage, $posX, $posY, 0, 0,$wInfo['width'],$wInfo['height']);
         		break;
         }

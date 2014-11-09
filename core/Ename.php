@@ -31,6 +31,11 @@ ini_set('display_errors','on');
 			fimport('FormCheck','form');
 			fimport('Form','form');
 			$_global['site_url'] = 'http://'.$_SERVER['SERVER_NAME'].'/';
+			if(!defined('IMAGE_CREATE_QUALITY'))
+			{
+				/* 图片生成质量 */
+				define('IMAGE_CREATE_QUALITY',90);
+			}
 		}
 		public function getUrl()
 		{
